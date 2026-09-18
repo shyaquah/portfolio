@@ -274,7 +274,7 @@ function start() {
   const roles = [
     { lead: "I'm ", text: "product-minded." },
     { lead: "I'm ", text: "client-focused." },
-    { lead: "I ", text: "code (sometimes)." },
+    { lead: "I'm ", text: "a developer (sometimes)." },
   ];
   const roleLeadEl = document.getElementById("role-lead");
   const roleTextEl = document.getElementById("role-text");
