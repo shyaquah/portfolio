@@ -230,6 +230,10 @@ function start() {
   initSectionScroll();
   initTimelineExpand();
 
+  // ---- Footer year: keep the copyright line current automatically ----
+  const yearEl = document.getElementById("year");
+  if (yearEl) yearEl.textContent = new Date().getFullYear();
+
   const glow = document.querySelector(".glow");
   let targetX = window.innerWidth / 2;
   let targetY = window.innerHeight / 2;

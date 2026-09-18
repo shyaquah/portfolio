@@ -699,3 +699,26 @@ body {
   .experience { padding: 24px 16px; }
   .timeline-item { padding-left: 24px; }
 }
+
+/* ---- Tiny footer credit line, fixed at the very bottom ---- */
+.site-footer {
+  position: fixed;
+  bottom: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 2;
+  margin: 0;
+  font-size: 0.62rem;
+  letter-spacing: 0.01em;
+  color: var(--muted);
+  opacity: 0.5;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+@media (max-width: 480px) {
+  .site-footer {
+    font-size: 0.56rem;
+    bottom: 6px;
+  }
+}
