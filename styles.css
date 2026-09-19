@@ -28,6 +28,7 @@ html, body {
   margin: 0;
   padding: 0;
   height: 100%;
+  scrollbar-gutter: stable both-edges;
 }
 
 body {
@@ -165,12 +166,27 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
   text-align: center;
   padding: 32px 20px;
   overflow-y: auto;
+  scrollbar-gutter: stable both-edges;
   scroll-snap-align: start;
   scroll-snap-stop: always;
+}
+
+/* Everything except the scroll button lives in here, so it can be
+   vertically centered as its own unit (flex: 1) while the button sits
+   in normal flow right after it — no position:absolute/left:50%, so its
+   centering can never be thrown off by a scrollbar eating into .hero's
+   content width (which is what caused it to drift off-center before). */
+.hero-content {
+  flex: 1;
+  min-height: 0;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 }
 
 .hero-summary {
@@ -196,7 +212,8 @@ body {
   }
 }
 
-.hero > * {
+.hero-content > *,
+.hero > .scroll-btn {
   opacity: 0;
   animation: rise-in 0.7s ease forwards;
 }
@@ -210,18 +227,19 @@ body {
 .hero .scroll-btn { animation-delay: 0.72s; }
 
 @media (prefers-reduced-motion: reduce) {
-  .hero > * {
+  .hero-content > *,
+  .hero > .scroll-btn {
     animation: none;
     opacity: 1;
   }
 }
 
-/* ---- Scroll button (bottom-center of hero) ---- */
+/* ---- Scroll button: normal flow (not absolutely positioned), so it's
+   centered by .hero's own align-items: center — the same mechanism that
+   already centers the name/role/links correctly — instead of left: 50%
+   against a width that a scrollbar can shrink unevenly. */
 .scroll-btn {
-  position: absolute;
-  left: 50%;
-  bottom: 28px;
-  transform: translateX(-50%);
+  margin-top: 12px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -430,6 +448,7 @@ body {
   scroll-snap-align: start;
   scroll-snap-stop: always;
   overflow-y: auto;
+  scrollbar-gutter: stable both-edges;
 }
 
 .timeline-wrap {
@@ -512,6 +531,7 @@ body {
   opacity: 0;
   transform: translateY(10px);
   transition: opacity 0.5s ease, transform 0.5s ease;
+  scroll-margin-top: 16px;
 }
 
 .timeline-item:last-child {

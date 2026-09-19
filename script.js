@@ -210,6 +210,15 @@ function initTimelineExpand() {
           items.some((i) => i.classList.contains("expanded"))
         );
       }
+      // Several entries have enough bullets that the expanded panel runs
+      // past the bottom of the section — bring the entry to the top of
+      // the view on open so its full detail is visible without the user
+      // having to scroll down manually to find it.
+      if (willExpand) {
+        requestAnimationFrame(() => {
+          item.scrollIntoView({ behavior: "smooth", block: "start" });
+        });
+      }
     }
 
     head.addEventListener("click", toggle);
