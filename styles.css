@@ -423,9 +423,9 @@ body {
   height: 100vh;
   width: 100%;
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
-  padding: 32px 20px;
+  padding: 100px 20px 40px;
   scroll-snap-align: start;
   scroll-snap-stop: always;
   overflow-y: auto;
@@ -696,7 +696,7 @@ body {
 }
 
 @media (max-width: 480px) {
-  .experience { padding: 24px 16px; }
+  .experience { padding: 88px 16px 32px; }
   .timeline-item { padding-left: 24px; }
 }
 
