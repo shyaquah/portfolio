@@ -58,6 +58,20 @@ body {
   }
 }
 
+/* Mobile: plain native scrolling, no forced snap-to-section — the JS
+   touch-swipe snap is disabled to match (see initSectionScroll in
+   script.js). Desktop keeps the snap-per-wheel-tick behavior. */
+@media (max-width: 480px) {
+  body {
+    scroll-snap-type: none;
+  }
+  .hero,
+  .experience {
+    scroll-snap-align: none;
+    scroll-snap-stop: normal;
+  }
+}
+
 /* ---- Ambient background: a few soft blurred shapes drifting in a loop ---- */
 .ambient {
   position: fixed;
@@ -162,6 +176,10 @@ body {
   position: relative;
   z-index: 1;
   height: 100vh;
+  height: 100dvh; /* iOS Safari: 100vh is the height with the address bar
+    collapsed, taller than what's actually visible on load, which pushed
+    the centered content upward relative to the real viewport. dvh tracks
+    the true, currently-visible viewport instead. */
   width: 100%;
   display: flex;
   flex-direction: column;
@@ -294,6 +312,19 @@ body {
   }
 }
 
+/* ---- Mobile: no scroll-down affordance at all — swiping already navigates
+   to the experience section on touch devices, so the hero just relies on
+   that. .back-btn is removed the same way, since swiping up already
+   returns to the hero. */
+@media (max-width: 480px) {
+  .scroll-btn {
+    display: none;
+  }
+  .back-btn {
+    display: none;
+  }
+}
+
 .eyebrow {
   margin: 0 0 8px;
   font-size: 0.95rem;
@@ -318,6 +349,10 @@ body {
   font-style: italic;
   color: var(--muted);
   letter-spacing: 0.01em;
+}
+
+.pronunciation .location {
+  font-style: normal;
 }
 
 .role {
@@ -440,6 +475,8 @@ body {
   position: relative;
   z-index: 1;
   height: 100vh;
+  height: 100dvh; /* see .hero — same iOS Safari address-bar issue, here
+    it was clipping/overflowing the section instead of miscentering it. */
   width: 100%;
   display: flex;
   align-items: flex-start;
@@ -565,6 +602,48 @@ body {
    "focus" visually obvious while the close transition plays out. */
 .timeline.has-expanded .timeline-item:not(.expanded) {
   opacity: 0.45;
+}
+
+.timeline.has-expanded .timeline-divider {
+  opacity: 0.45;
+}
+
+/* ---- Timeline divider: a plain label marking where "earlier experience"
+   (internships and the like) starts, still inside the same <ol> so the
+   vertical line and dots run straight through it — this is a soft section
+   break, not a second timeline. A short tick on the line stands in for a
+   dot, and the fade-in on scroll matches the items around it (see the
+   ".timeline-item, .timeline-divider" selector in script.js). */
+.timeline-divider {
+  position: relative;
+  padding: 6px 0 20px 28px;
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+.timeline-divider.in-view {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.timeline-divider::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 50%;
+  width: 11px;
+  height: 1px;
+  background: var(--muted);
+  opacity: 0.6;
+}
+
+.timeline-divider-label {
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+  opacity: 0.7;
 }
 
 .timeline-item-head {
@@ -714,11 +793,17 @@ body {
   .timeline-item .dot {
     transition: none;
   }
+  .timeline-divider {
+    transition: none;
+    opacity: 1;
+    transform: none;
+  }
 }
 
 @media (max-width: 480px) {
   .experience { padding: 88px 16px 32px; }
   .timeline-item { padding-left: 24px; }
+  .timeline-divider { padding-left: 24px; }
 }
 
 /* ---- Tiny footer credit line, fixed at the very bottom ---- */

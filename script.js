@@ -130,6 +130,13 @@ function initSectionScroll() {
     { passive: false }
   );
 
+  // Mobile gets plain, native touch scrolling — no forced snap-to-section.
+  // The wheel-driven snap above (desktop/trackpad) and the CSS scroll-snap
+  // (also disabled for mobile in styles.css) stay untouched; this check is
+  // re-read on every touch rather than cached, so it still behaves if the
+  // viewport crosses the breakpoint (e.g. rotation) mid-session.
+  const isMobileViewport = () => window.matchMedia("(max-width: 480px)").matches;
+
   let touchStartY = null;
   window.addEventListener(
     "touchstart",
@@ -141,7 +148,7 @@ function initSectionScroll() {
   window.addEventListener(
     "touchmove",
     (e) => {
-      if (touchStartY === null || isAnimating) return;
+      if (touchStartY === null || isAnimating || isMobileViewport()) return;
       const dy = touchStartY - e.touches[0].clientY;
       if (current === 0 && dy > 30) {
         goToExperience();
@@ -370,7 +377,10 @@ function start() {
   });
 
   // ---- Fade in the experience timeline as it scrolls into view ----
-  const timelineItems = document.querySelectorAll(".timeline-item");
+  // Includes .timeline-divider so the "Earlier Experience" label fades in
+  // alongside the entries around it, instead of just appearing at full
+  // opacity while its neighbours animate.
+  const timelineItems = document.querySelectorAll(".timeline-item, .timeline-divider");
   if ("IntersectionObserver" in window) {
     const observer = new IntersectionObserver(
       (entries) => {
