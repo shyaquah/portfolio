@@ -72,6 +72,23 @@ class TextScramble {
   }
 }
 
+// ---- Shared: collapse every open timeline accordion item. Used both when
+// a different item is opened (only one stays open at a time, handled in
+// initTimelineExpand) and when the user heads back up to the hero, so a
+// fresh visit to Experience always starts collapsed rather than remembering
+// whatever was left open last time.
+function collapseAllTimelineItems() {
+  const timelineEl = document.querySelector(".timeline");
+  document.querySelectorAll(".timeline-item.expanded").forEach((item) => {
+    const head = item.querySelector(".timeline-item-head");
+    const detail = item.querySelector(".timeline-detail");
+    item.classList.remove("expanded");
+    if (head) head.setAttribute("aria-expanded", "false");
+    if (detail) detail.style.maxHeight = "0px";
+  });
+  if (timelineEl) timelineEl.classList.remove("has-expanded");
+}
+
 // ---- Hero <-> Experience: turn the first scroll gesture into a full,
 // animated snap to the next section rather than a partial native scroll.
 // Falls back gracefully to plain scroll-snap if JS or the events below
@@ -106,6 +123,11 @@ function initSectionScroll() {
     if (isAnimating || current === 0) return;
     lock();
     current = 0;
+    // Leaving Experience resets it — any open accordion entry closes and
+    // its scroll position returns to the top, so the next visit always
+    // starts fresh instead of picking up wherever it was left.
+    collapseAllTimelineItems();
+    experience.scrollTop = 0;
     hero.scrollIntoView({ behavior: "smooth", block: "start" });
   }
 
@@ -221,10 +243,33 @@ function initTimelineExpand() {
       // past the bottom of the section — bring the entry to the top of
       // the view on open so its full detail is visible without the user
       // having to scroll down manually to find it.
+      //
+      // Two things that broke this before:
+      // 1. item.scrollIntoView() lets the browser choose which scrollable
+      //    ancestor(s) to move, and it was reaching up to the page's own
+      //    scroll container — which has scroll-snap-type: y mandatory on
+      //    desktop, so the snap engine just pulled it straight back to the
+      //    top of the section, swallowing the scroll entirely.
+      // 2. It measured the item's position on the very next frame, while
+      //    the 0.45s collapse/expand transition (closing the previous open
+      //    item, opening this one) had barely started — so the target was
+      //    based on a layout that kept shifting under it afterwards, which
+      //    is what made it look like it "moved"/jumped once it landed.
+      //
+      // Fixing both: scroll `.experience` itself directly (never the page),
+      // and wait for the transition to settle before measuring where the
+      // item actually ends up.
       if (willExpand) {
-        requestAnimationFrame(() => {
-          item.scrollIntoView({ behavior: "smooth", block: "start" });
-        });
+        const experience = document.getElementById("experience");
+        setTimeout(() => {
+          if (!experience || !item.classList.contains("expanded")) return;
+          const itemRect = item.getBoundingClientRect();
+          const expRect = experience.getBoundingClientRect();
+          const breathingRoom = 16; // matches .timeline-item's scroll-margin-top
+          const target =
+            experience.scrollTop + (itemRect.top - expRect.top) - breathingRoom;
+          experience.scrollTo({ top: Math.max(target, 0), behavior: "smooth" });
+        }, 460);
       }
     }
 
