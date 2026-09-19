@@ -38,6 +38,7 @@ body {
   position: relative;
   overflow-x: hidden;
   overflow-y: auto;
+  scrollbar-gutter: stable both-edges;
   scroll-snap-type: y mandatory;
   scroll-behavior: smooth;
   opacity: 0;
@@ -704,8 +705,7 @@ body {
 .site-footer {
   position: fixed;
   bottom: 8px;
-  left: 50%;
-  transform: translateX(-50%);
+  right: 14px;
   z-index: 2;
   margin: 0;
   font-size: 0.62rem;
@@ -720,5 +720,6 @@ body {
   .site-footer {
     font-size: 0.56rem;
     bottom: 6px;
+    right: 10px;
   }
 }
